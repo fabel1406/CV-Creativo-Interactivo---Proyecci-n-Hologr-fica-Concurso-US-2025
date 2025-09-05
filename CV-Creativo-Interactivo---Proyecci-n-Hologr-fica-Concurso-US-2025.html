@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holograma Científico - Rafabel Santana</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: #000;
+            color: #00ffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .hologram-container {
+            position: relative;
+            min-height: 100vh;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                linear-gradient(0deg, #000 0%, #001122 100%);
+            perspective: 1000px;
+        }
+        
+        /* Partículas flotantes */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00ffff;
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+            box-shadow: 0 0 6px #00ffff;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+        
+        .hologram-header {
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .scientist-name {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00ffff, #0099ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: hologramFlicker 3s ease-in-out infinite;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+        }
+        
+        @keyframes hologramFlicker {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            25% { opacity: 0.8; transform: scale(1.02); }
+            50% { opacity: 1; transform: scale(1); }
+            75% { opacity: 0.9; transform: scale(0.98); }
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            color: #0099ff;
+            margin-bottom: 30px;
+        }
+        
+        .hologram-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .holo-card {
+            background: rgba(0, 255, 255, 0.05);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+        }
+        
+        .holo-card:hover {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 
+                0 20px 40px rgba(0, 255, 255, 0.2),
+                0 0 50px rgba(0, 255, 255, 0.4);
+        }
+        
+        .holo-card:active {
+            transform: translateY(-5px) rotateX(2deg) scale(0.98);
+        }
+        
+        .card-icon {
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 15px;
+            animation: floatIcon 4s ease-in-out infinite;
+        }
+        
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .card-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .card-content {
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: #99ddff;
+            text-align: center;
+        }
+        
+        .achievement-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            font-weight: bold;
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .hologram-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            display: none;
+            backdrop-filter: blur(15px);
+        }
+        
+        .hologram-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(0, 20, 40, 0.9), rgba(0, 40, 80, 0.9));
+            border: 3px solid #00ffff;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 
+                0 0 50px rgba(0, 255, 255, 0.6),
+                inset 0 0 30px rgba(0, 255, 255, 0.1);
+        }
+        
+        .modal-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #00ffff;
+            margin-bottom: 10px;
+            animation: hologramFlicker 3s ease-in-out infinite;
+        }
+        
+        .modal-content {
+            color: #99ddff;
+            line-height: 1.6;
+            font-size: 0.9em;
+        }
+        
+        .modal-content h3 {
+            color: #00ffff;
+            font-size: 1.1em;
+            margin: 20px 0 10px 0;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            padding-bottom: 5px;
+        }
+        
+        .modal-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .modal-content li {
+            margin: 8px 0;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #ff4444;
+            font-size: 2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .close-btn:hover {
+            color: #ff0000;
+            transform: scale(1.2);
+            background: rgba(255, 68, 68, 0.1);
+        }
+        
+        .close-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .contact-holo {
+            position: relative;
+            margin: 40px auto 20px auto;
+            max-width: 600px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            font-size: 0.85em;
+            text-align: center;
+            z-index: 100;
+        }
+        
+        .contact-holo a {
+            color: #00ffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-holo a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+        
+        /* Control de música de fondo - mejorado */
+        .music-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: rgba(0, 255, 255, 0.15);
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            opacity: 0.7;
+        }
+        
+        .music-control:hover {
+            background: rgba(0, 255, 255, 0.25);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+            transform: scale(1.05);
+            opacity: 1;
+        }
+        
+        .music-control.playing {
+            animation: musicPulse 3s ease-in-out infinite;
+            opacity: 1;
+        }
+        
+        @keyframes musicPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+            }
+            50% { 
+                transform: scale(1.05); 
+                box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+            }
+        }
+        
+        /* Control de volumen */
+        .volume-control {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 1001;
+            background: rgba(0, 255, 255, 0.15);
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        
+        .volume-control:hover {
+            opacity: 1;
+            background: rgba(0, 255, 255, 0.25);
+        }
+        
+        .volume-slider {
+            width: 100px;
+            height: 5px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 5px;
+            outline: none;
+            margin: 0 10px;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #00ffff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+        
+        .volume-slider::-moz-range-thumb {
+            width: 15px;
+            height: 15px;
+            background: #00ffff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+        
+        .contact-title {
+            font-weight: 700;
+            color: #00ffff;
+            margin-bottom: 8px;
+        }
+        
+        .dna-helix {
+            position: fixed;
+            top: 0;
+            right: 20px;
+            width: 60px;
+            height: 100vh;
+            opacity: 0.3;
+            z-index: 1;
+        }
+        
+        .helix-strand {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, #00ffff, #0099ff);
+            animation: helixRotate 10s linear infinite;
+        }
+        
+        .helix-strand:nth-child(1) {
+            left: 20px;
+            animation-delay: 0s;
+        }
+        
+        .helix-strand:nth-child(2) {
+            right: 20px;
+            animation-delay: 5s;
+        }
+        
+        @keyframes helixRotate {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            animation: scanMove 4s ease-in-out infinite;
+            z-index: 10;
+        }
+        
+        @keyframes scanMove {
+            0%, 100% { transform: translateY(0vh); opacity: 1; }
+            50% { transform: translateY(100vh); opacity: 0.5; }
+        }
+        
+        /* Efecto de sonido visual */
+        @keyframes soundWave {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.5); opacity: 0.3; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        
+        .sound-wave {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            animation: soundWave 0.6s ease-out;
+        }
+        
+        /* Footer */
+        .hologram-footer {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 20, 40, 0.8);
+            color: #00ffff;
+            font-size: 0.8em;
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .hologram-footer p {
+            margin: 5px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .scientist-name { 
+                font-size: 1.8em; 
+                line-height: 1.2;
+                margin-bottom: 15px;
+            }
+            .subtitle {
+                font-size: 1em;
+                margin-bottom: 20px;
+            }
+            .hologram-grid { 
+                grid-template-columns: 1fr; 
+                padding: 20px 15px;
+                gap: 20px;
+            }
+            .holo-card {
+                padding: 20px;
+                margin-bottom: 15px;
+            }
+            .card-icon {
+                font-size: 2.5em;
+                margin-bottom: 10px;
+            }
+            .card-title {
+                font-size: 1em;
+                margin-bottom: 10px;
+            }
+            .card-content {
+                font-size: 0.8em;
+                line-height: 1.4;
+            }
+            .hologram-modal { 
+                margin: 10px; 
+                width: calc(100% - 20px);
+                max-height: 85vh;
+                padding: 20px;
+            }
+            .modal-title {
+                font-size: 1.2em;
+            }
+            .modal-content {
+                font-size: 0.85em;
+            }
+            .contact-holo { 
+                margin: 20px 15px;
+                font-size: 0.75em;
+                padding: 15px;
+            }
+            .music-control {
+                width: 50px;
+                height: 50px;
+                top: 15px;
+                right: 15px;
+            }
+            .volume-control {
+                top: 75px;
+                right: 15px;
+            }
+            .volume-slider {
+                width: 80px;
+            }
+            .dna-helix { display: none; }
+            .particles {
+                opacity: 0.3;
+            }
+        }
+        @media (max-width: 480px) {
+            .scientist-name { 
+                font-size: 1.5em;
+            }
+            .subtitle {
+                font-size: 0.9em;
+            }
+            .hologram-grid {
+                padding: 15px 10px;
+            }
+            .contact-holo {
+                margin: 15px 10px;
+                font-size: 0.7em;
+                padding: 12px;
+            }
+            .hologram-footer {
+                font-size: 0.7em;
+                padding: 10px;
+            }
+            .volume-slider {
+                width: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hologram-container">
+        <!-- Partículas flotantes -->
+        <div class="particles" id="particles"></div>
+        
+        <!-- Control de música -->
+        <div class="music-control playing" id="musicControl" onclick="toggleBackgroundMusic()">
+            <span id="musicIcon">🎵</span>
+        </div>
+        
+        <!-- Control de volumen -->
+        <div class="volume-control">
+            <span>🔊</span>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30">
+        </div>
+        
+        <!-- Línea de escaneo holográfico -->
+        <div class="scan-line"></div>
+        
+        <!-- Hélice de ADN decorativa -->
+        <div class="dna-helix">
+            <div class="helix-strand"></div>
+            <div class="helix-strand"></div>
+        </div>
+        
+        <!-- Header -->
+        <div class="hologram-header">
+            <h1 class="scientist-name">RAFABEL GABRIEL SANTANA VILLALONA</h1>
+            <p class="subtitle">🧬 PROYECCIÓN HOLOGRÁFICA CIENTÍFICA 🔬</p>
+            <p class="subtitle">Microbiólogo | Investigador en Biotecnología y Economía Circular</p>
+        </div>
+        
+        <!-- Grid de tarjetas holográficas -->
+        <div class="hologram-grid">
+            <div class="holo-card" onclick="showHologram('experiencia')" data-sound="lab">
+                <div class="achievement-badge">4+ años</div>
+                <div class="card-icon">🧪</div>
+                <div class="card-title">Experiencia Profesional</div>
+                <div class="card-content">
+                    Investigador US - TED2021-129351A<br>
+                    Microbiólogo Clínico MALDI-TOF<br>
+                    Analista Microbiología
+                </div>
+            </div>
+            
+            <div class="holo-card" onclick="showHologram('formacion')" data-sound="academic">
+                <div class="achievement-badge">Máster US</div>
+                <div class="card-icon">🎓</div>
+                <div class="card-title">Formación Académica</div>
+                <div class="card-content">
+                    Máster Genética Molecular<br>
+                    Licenciatura Microbiología<br>
+                    Bachiller Procesamiento
+                </div>
+            </div>
+            
+            <div class="holo-card" onclick="showHologram('proyectos')" data-sound="innovation">
+                <div class="achievement-badge">🥇 BISC-E</div>
+                <div class="card-icon">🔬</div>
+                <div class="card-title">Proyectos I+D+I</div>
+                <div class="card-content">
+                    GANADOR Nacional BISC-E 2024<br>
+                    Bacterias Halotolerantes<br>
+                    β-Glucanos Fúngicos
+                </div>
+            </div>
+            
+            <div class="holo-card" onclick="showHologram('publicaciones')" data-sound="achievement">
+                <div class="achievement-badge">🏆 Berlin</div>
+                <div class="card-icon">📊</div>
+                <div class="card-title">Publicaciones</div>
+                <div class="card-content">
+                    🎖️ MEJOR PÓSTER Berlin 2024<br>
+                    Congresos Internacionales<br>
+                    RED IBEROAMERICANA
+                </div>
+            </div>
+            
+            <div class="holo-card" onclick="showHologram('habilidades')" data-sound="tech">
+                <div class="achievement-badge">Tech IA</div>
+                <div class="card-icon">⚗️</div>
+                <div class="card-title">Habilidades Técnicas</div>
+                <div class="card-content">
+                    MALDI-TOF MS, VITEK 2<br>
+                    Microsoft Copilot, IA<br>
+                    Toxicología in vivo/vitro
+                </div>
+            </div>
+            
+            <div class="holo-card" onclick="showHologram('premios')" data-sound="trophy">
+                <div class="achievement-badge">🏆 Multi</div>
+                <div class="card-icon">🏆</div>
+                <div class="card-title">Reconocimientos</div>
+                <div class="card-content">
+                    🥇 BISC-E Nacional 2024<br>
+                    🥈 Emprendimiento US<br>
+                    🎖️ Mejor Póster Berlin
+                </div>
+            </div>
+        </div>
+        
+        <!-- Información de contacto -->
+        <div class="contact-holo">
+            <div class="contact-title">📡 CANAL DE COMUNICACIÓN</div>
+            <div>📧 rafabel1406@gmail.com</div>
+            <div>💬 WhatsApp: 644552692</div>
+            <div>📍 Doctor Delgado Roig #7B, Sevilla</div>
+            <div>🔗 LinkedIn: <a href="https://www.linkedin.com/in/rafabel-santana-villalona-25a7b4243/" target="_blank">/rafabel-santana-villalona</a></div>
+            <div>🆔 NIE: Y9006809T</div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="hologram-footer">
+        <p>Holograma Científico - Proyección Interactiva © 2025</p>
+        <p>Diseñado para el Concurso de CV Electronico - Universidad de Sevilla</p>
+    </div>
+    
+    <!-- Modal holográfico -->
+    <div id="hologramOverlay" class="hologram-overlay" onclick="closeHologram(event)">
+        <div class="hologram-modal" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeHologram()">×</button>
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Proyección Holográfica Activada</h2>
+            </div>
+            <div class="modal-content" id="modalContent"></div>
+        </div>
+    </div>
+    
+    <!-- Elemento de audio para la música de fondo -->
+    <audio id="backgroundMusic" loop="">
+        <!-- Reemplazar con tu archivo de música -->
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        <!-- Si prefieres usar un archivo local, colócalo en la misma carpeta y cambia la ruta -->
+        <!-- <source src="hans-zimmer-style.mp3" type="audio/mpeg"> -->
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+    
+    <script>
+        // Datos holográficos actualizados
+        const hologramData = {
+            experiencia: {
+                title: '🧪 EXPERIENCIA PROFESIONAL PROYECTADA',
+                content: `
+                    <h3>🔬 Investigador de Proyecto - Universidad de Sevilla</h3>
+                    <p><strong>Junio 2022 - Diciembre 2024 | TED2021-129351A</strong></p>
+                    <ul>
+                        <li>🥭 Estabilización de subproductos del aceite de oliva (alperujo)</li>
+                        <li>🍄 Cultivo especializado de hongos: <em>Pleurotus ostreatus</em> y <em>Lentinula edodes</em></li>
+                        <li>🐛 Producción optimizada de insectos: <em>Tenebrio molitor</em></li>
+                        <li>⚗️ Obtención y caracterización de harinas proteicas</li>
+                        <li>🧬 Determinación de compuestos bioactivos (β-glucanos, antioxidantes)</li>
+                        <li>🧪 Evaluación de seguridad alimentaria: Ensayos Ames, genotoxicidad (cometa) in vitro/vivo</li>
+                        <li>📊 Determinación de DL50 y estudios de toxicidad subcrónica</li>
+                    </ul>
+                    
+                    <h3>👨‍🏫 Tutor Proyecto Innovación Educativa - Junta de Andalucía</h3>
+                    <p><strong>Sep 2023 - Mayo 2024 | PIN-362/23</strong></p>
+                    <ul>
+                        <li>🎓 Tutorización de 120 estudiantes investigadores</li>
+                        <li>📚 Proyecto: "Caracterización nutricional de harinas de insectos y hongos comestibles"</li>
+                    </ul>
+                    
+                    <h3>🔬 Microbiólogo Clínico - Laboratorio Amadita</h3>
+                    <p><strong>Sep 2020 - Oct 2021 | Santo Domingo, Rep. Dominicana</strong></p>
+                    <ul>
+                        <li>⚡ Identificación rápida de patógenos mediante MALDI-TOF MS</li>
+                        <li>🤖 Sistemas automatizados VITEK 2 (bioMérieux)</li>
+                        <li>⚙️ Optimización de procedimientos, reduciendo tiempo de análisis</li>
+                        <li>🏆 Control de calidad bajo protocolos CLSI e ISO estrictos</li>
+                        <li>👥 Capacitación de 2 técnicos en metodologías avanzadas</li>
+                    </ul>
+                    
+                    <h3>🧪 Analista en Microbiología</h3>
+                    <ul>
+                        <li>💊 Análisis microbiológico para industria farmacéutica</li>
+                        <li>🔬 Control de calidad: esterilidad, conteos microbianos</li>
+                        <li>🌊 Análisis de aguas (potable, embotellada, residual)</li>
+                        <li>🍽️ Microbiología alimentaria según normativas</li>
+                        <li>🏭 Monitoreo ambiental en áreas limpias</li>
+                    </ul>
+                `
+            },
+            
+            formacion: {
+                title: '🎓 FORMACIÓN ACADÉMICA HOLOPROYECTADA',
+                content: `
+                    <h3>🧬 Máster en Genética Molecular y Biotecnología</h3>
+                    <p><strong>Universidad de Sevilla | Septiembre 2022</strong></p>
+                    <ul>
+                        <li>🔬 Especialización en biotecnología aplicada</li>
+                        <li>🧬 Técnicas avanzadas de biología molecular</li>
+                        <li>📊 Análisis genómico y metagenómico</li>
+                        <li>⚗️ Investigación en compuestos bioactivos</li>
+                    </ul>
+                    
+                    <h3>🦠 Licenciatura en Microbiología</h3>
+                    <p><strong>Universidad Autónoma de Santo Domingo (UASD) | Enero 2020</strong></p>
+                    <ul>
+                        <li>🔬 Microbiología aplicada y clínica</li>
+                        <li>🧪 Técnicas de laboratorio microbiológico</li>
+                        <li>⚗️ Análisis bioquímico y molecular</li>
+                        <li>🦠 Caracterización de microorganismos</li>
+                        <li>🏥 Diagnóstico microbiológico clínico</li>
+                    </ul>
+                    
+                    <h3>🏭 Bachiller Técnico en Procesamiento de Alimentos</h3>
+                    <p><strong>Instituto Politécnico Máximo Gómez | Octubre 2011</strong></p>
+                    <ul>
+                        <li>🏭 Tecnología de procesamiento industrial</li>
+                        <li>🔬 Control de calidad alimentaria</li>
+                        <li>📋 Sistemas HACCP y BPM</li>
+                        <li>🧪 Análisis fisicoquímico de alimentos</li>
+                    </ul>
+                `
+            },
+            
+            proyectos: {
+                title: '🔬 PROYECTOS I+D+I DIGITALIZADOS',
+                content: `
+                    <h3>🥇 BISC-E 2024 - Equipo INNOVAGRO (GANADOR NACIONAL)</h3>
+                    <ul>
+                        <li>🌍 Bio-based Innovation Student Challenge Europe</li>
+                        <li>🏆 PRIMER LUGAR Nacional España</li>
+                        <li>♻️ Proyecto innovador en economía circular</li>
+                        <li>🧬 Enfoque biotecnológico sostenible</li>
+                    </ul>
+                    
+                    <h3>♻️ Revalorización de Subproductos Agroalimentarios</h3>
+                    <p><strong>Universidad de Sevilla | TED2021-129351A | 2022-2024</strong></p>
+                    <ul>
+                        <li>🥩 Obtención de proteínas emergentes para alimentación humana y animal</li>
+                        <li>🔄 Implementación de economía circular</li>
+                        <li>🌱 Sostenibilidad en sector agroalimentario</li>
+                        <li>🧬 Innovación biotecnológica aplicada</li>
+                    </ul>
+                    
+                    <h3>🏜️ Aislamiento de Bacterias Halotolerantes</h3>
+                    <p><strong>UASD | 2019 | Dunas de Las Calderas</strong></p>
+                    <ul>
+                        <li>🗺️ PRIMERA investigación microbiológica en este entorno extremo</li>
+                        <li>🔬 Caracterización de microorganismos extremófilos</li>
+                        <li>📊 Análisis pionero de biodiversidad microbiana</li>
+                        <li>🧬 Identificación molecular de especies nuevas</li>
+                    </ul>
+                    
+                    <h3>🍄 Obtención de β-Glucanos Fúngicos</h3>
+                    <p><strong>Tesis de Máster - US | 2022</strong></p>
+                    <ul>
+                        <li>💊 Desarrollo de inmunoestimulantes naturales</li>
+                        <li>🐾 Aplicación en alimentación animal</li>
+                        <li>⚗️ Optimización de procesos de extracción</li>
+                        <li>📊 Caracterización estructural y funcional</li>
+                    </ul>
+                    
+                    <h3>🔬 BIMETAEXMI - Bioprospección de Microbiomas</h3>
+                    <p><strong>UASD | 2018 | Facultad de Ciencias de la Salud</strong></p>
+                    <ul>
+                        <li>🦠 Estudio de microbiomas extremos</li>
+                        <li>🧬 Técnicas de metagenómica estructural</li>
+                        <li>📊 Análisis bioinformático</li>
+                    </ul>
+                `
+            },
+            
+            publicaciones: {
+                title: '📊 PUBLICACIONES CIENTÍFICAS HOLOGRÁFICAS',
+                content: `
+                    <h3>🎖️ MEJOR PÓSTER CIENTÍFICO - Berlin 2024</h3>
+                    <p><strong>"Production of Protein-Rich Flours from Tenebrio molitor Larvae Fed with Olive Oil Industry Byproducts"</strong></p>
+                    <ul>
+                        <li>🌍 Alternative Protein for Food and Feed International Conference</li>
+                        <li>📍 Berlín, Alemania - Diciembre 2024</li>
+                        <li>🏆 RECONOCIMIENTO al mejor trabajo científico</li>
+                        <li>🐛 Investigación pionera en proteína de insectos</li>
+                    </ul>
+                    
+                    <h3>📋 I Workshop RED IBEROAMERICANA REDIVAL-EC</h3>
+                    <p><strong>Sevilla | Noviembre 2024</strong></p>
+                    <ul>
+                        <li>📊 "Acondicionamiento del Alperujo para <em>Tenebrio molitor</em>"</li>
+                        <li>♻️ "Reutilización del Alperujo para <em>Tenebrio molitor</em>"</li>
+                        <li>🍄 "Production of <em>Pleurotus ostreatus</em> Mushrooms Grown on Cultivation Media Formulated with Byproducts from the Olive Oil Industry"</li>
+                    </ul>
+                    
+                    <h3>🌟 Participación en Eventos Científicos</h3>
+                    <ul>
+                        <li>🌍 Alternative Protein Conference - Berlin 2024</li>
+                        <li>🌎 Red Iberoamericana REDIVAL-EC - Sevilla 2024</li>
+                        <li>🧪 XXIV Congreso Español de Toxicología - Córdoba 2023</li>
+                        <li>🔬 Múltiples workshops especializados</li>
+                    </ul>
+                `
+            },
+            
+            habilidades: {
+                title: '⚗️ MATRIZ DE HABILIDADES PROYECTADA',
+                content: `
+                    <h3>🧪 Técnicas de Laboratorio Especializadas</h3>
+                    <ul>
+                        <li>🍄 Cultivo de hongos comestibles (<em>Pleurotus</em>, <em>Lentinula</em>)</li>
+                        <li>🐛 Producción de insectos comestibles (<em>Tenebrio molitor</em>)</li>
+                        <li>⚡ Identificación microbiana por MALDI-TOF MS</li>
+                        <li>🤖 Sistemas automatizados VITEK 2</li>
+                        <li>🧪 Bioensayos y análisis toxicológicos</li>
+                        <li>⚗️ Toxicología in vivo e in vitro</li>
+                        <li>🧬 Técnicas de metagenómica estructural</li>
+                        <li>🔬 Control de calidad microbiológico (USP/FP)</li>
+                        <li>🧪 Ensayos de esterilidad y conteos microbianos</li>
+                    </ul>
+                    
+                    <h3>📊 Gestión y Análisis Avanzado</h3>
+                    <ul>
+                        <li>📋 Gestión integral de proyectos I+D+i</li>
+                        <li>🏆 Sistemas de gestión de calidad (CLSI/ISO, BPL)</li>
+                        <li>💼 Microsoft Office Suite avanzado</li>
+                        <li>🔍 Web of Science y bases de datos científicas</li>
+                        <li>📊 Análisis estadístico y bioinformático</li>
+                    </ul>
+                    
+                    <h3>🤖 Inteligencia Artificial y Productividad</h3>
+                    <ul>
+                        <li>💻 Microsoft Copilot certificado</li>
+                        <li>🧠 Google AI y herramientas de productividad</li>
+                        <li>🚀 Estrategias de emprendimiento en biotecnología</li>
+                        <li>💡 Innovación en economía circular</li>
+                        <li>🔬 Aplicación de IA en investigación científica</li>
+                    </ul>
+                    
+                    <h3>🌍 Idiomas y Certificaciones</h3>
+                    <ul>
+                        <li>🇪🇸 Español (Nativo)</li>
+                        <li>🇬🇧 Inglés (B2 - Avanzado)</li>
+                        <li>⚠️ Manipulación de productos químicos</li>
+                        <li>🐭 Manejo de animales de experimentación</li>
+                        <li>🛡️ Prevención de Riesgos Laborales (PRL)</li>
+                    </ul>
+                `
+            },
+            
+            premios: {
+                title: '🏆 SALA DE RECONOCIMIENTOS HOLOGRÁFICA',
+                content: `
+                    <h3>🥇 GANADOR NACIONAL - BISC-E 2024</h3>
+                    <p><strong>Bio-based Innovation Student Challenge Europe</strong></p>
+                    <ul>
+                        <li>🌍 Competencia a nivel europeo</li>
+                        <li>♻️ Proyecto: Innovación en economía circular</li>
+                        <li>👥 Liderazgo del equipo INNOVAGRO</li>
+                        <li>🧬 Enfoque biotecnológico sostenible</li>
+                        <li>🏆 Representación de España en fase europea</li>
+                    </ul>
+                    
+                    <h3>🥈 2º PREMIO - Concurso Ideas Emprendimiento US</h3>
+                    <p><strong>Universidad de Sevilla | 2024</strong></p>
+                    <ul>
+                        <li>💡 "Valoración de residuos agroindustriales para una Economía Circular"</li>
+                        <li>🚀 Enfoque empresarial innovador y sostenible</li>
+                        <li>💰 Modelo de negocio viable y escalable</li>
+                        <li>🌱 Impacto ambiental positivo demostrado</li>
+                    </ul>
+                    
+                    <h3>🎖️ MEJOR PÓSTER CIENTÍFICO INTERNACIONAL</h3>
+                    <p><strong>Alternative Protein Conference - Berlin 2024</strong></p>
+                    <ul>
+                        <li>🔬 Reconocimiento científico internacional</li>
+                        <li>🐛 Investigación innovadora en proteínas de insectos</li>
+                        <li>♻️ Aprovechamiento sostenible de subproductos</li>
+                        <li>🌍 Contribución a la seguridad alimentaria global</li>
+                    </ul>
+                    
+                    <h3>📜 Formación Continua Certificada 2024-2025</h3>
+                    <ul>
+                        <li>🐭 Capacitación Manejo Animales Experimentación (Comunidad Madrid)</li>
+                        <li>🤖 Google: Inteligencia Artificial y Productividad (Santander)</li>
+                        <li>🚀 Estrategias Crecimiento Startups (Santander X)</li>
+                        <li>💻 Microsoft Copilot e IA (Santander X)</li>
+                        <li>🔍 Web of Science: Búsquedas con IA (Clarivate)</li>
+                        <li>🛡️ Integración PRL Personal Docente (15h - US)</li>
+                        <li>📚 Investigación BBDD Agricultura y Medio Ambiente (EBSCO)</li>
+                    </ul>
+                    
+                    <h3>📋 Certificaciones Técnicas Anteriores</h3>
+                    <ul>
+                        <li>⚠️ Agentes Químicos y Prevención Riesgos (CSIC)</li>
+                        <li>🧬 Biología Molecular y Metagenómica (2017)</li>
+                        <li>💻 Bioinformática y Genómica (2019)</li>
+                        <li>🔬 Metagenómica Estructural y Funcional (2021)</li>
+                        <li>💼 Tecnologías para el Emprendimiento (2016)</li>
+                    </ul>
+                `
+            }
+        };
+        
+        // Crear partículas flotantes
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Sistema de música de fondo mejorado
+        let backgroundMusic = null;
+        let isMusicPlaying = false;
+        
+        function initBackgroundMusic() {
+            backgroundMusic = document.getElementById('backgroundMusic');
+            
+            // Establecer volumen inicial
+            const volumeSlider = document.getElementById('volumeSlider');
+            backgroundMusic.volume = volumeSlider.value / 100;
+            
+            // Evento para el control de volumen
+            volumeSlider.addEventListener('input', function() {
+                backgroundMusic.volume = this.value / 100;
+            });
+            
+            // Configurar el bucle y eventos
+            backgroundMusic.addEventListener('ended', function() {
+                if (isMusicPlaying) {
+                    this.currentTime = 0;
+                    this.play().catch(e => console.log("Error al reproducir música:", e));
+                }
+            });
+        }
+        
+        function toggleBackgroundMusic() {
+            const musicIcon = document.getElementById('musicIcon');
+            const musicControl = document.getElementById('musicControl');
+            
+            if (!backgroundMusic) {
+                initBackgroundMusic();
+            }
+            
+            if (isMusicPlaying) {
+                // Pausar música
+                backgroundMusic.pause();
+                isMusicPlaying = false;
+                musicIcon.textContent = '🔇';
+                musicControl.classList.remove('playing');
+            } else {
+                // Reproducir música
+                backgroundMusic.play().catch(e => {
+                    console.log("Error al reproducir música:", e);
+                    // Si falla, intentar con interacción del usuario
+                    document.addEventListener('click', function playOnce() {
+                        backgroundMusic.play().catch(e => console.log("Error al reproducir música después de interacción:", e));
+                        document.removeEventListener('click', playOnce);
+                    }, { once: true });
+                });
+                isMusicPlaying = true;
+                musicIcon.textContent = '🎵';
+                musicControl.classList.add('playing');
+            }
+        }
+        
+        // Iniciar música automáticamente (con bajo volumen)
+        function startAutoMusic() {
+            setTimeout(() => {
+                if (!backgroundMusic) {
+                    initBackgroundMusic();
+                }
+                
+                // Establecer volumen bajo para la reproducción automática
+                backgroundMusic.volume = 0.2;
+                document.getElementById('volumeSlider').value = 20;
+                
+                // Intentar reproducir
+                backgroundMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    const musicIcon = document.getElementById('musicIcon');
+                    const musicControl = document.getElementById('musicControl');
+                    if (musicIcon && musicControl) {
+                        musicIcon.textContent = '🎵';
+                        musicControl.classList.add('playing');
+                    }
+                }).catch(e => {
+                    console.log("La reproducción automática fue bloqueada por el navegador. Se requiere interacción del usuario.");
+                    // No mostrar error, simplemente esperar a que el usuario haga clic
+                });
+            }, 3000);
+        }
+        
+        // Crear diferentes sonidos para cada sección
+        function createSectionSound(type) {
+            // Usar Web Audio API para sonidos de interacción
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Configurar diferentes tonos según el tipo
+                const sounds = {
+                    lab: { freq: 400, duration: 0.3 },
+                    academic: { freq: 523, duration: 0.4 },
+                    innovation: { freq: 330, duration: 0.5 },
+                    achievement: { freq: 659, duration: 0.6 },
+                    tech: { freq: 440, duration: 0.3 },
+                    trophy: { freq: 523, duration: 0.7 }
+                };
+                
+                const sound = sounds[type] || sounds.lab;
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.value = sound.freq;
+                
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + sound.duration);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + sound.duration);
+            } catch (e) {
+                console.log("Error al crear sonido de sección:", e);
+            }
+        }
+        
+        // Crear efecto visual de ondas sonoras
+        function createSoundWave(element) {
+            const wave = document.createElement('div');
+            wave.className = 'sound-wave';
+            element.appendChild(wave);
+            
+            setTimeout(() => {
+                if (wave.parentNode) {
+                    wave.parentNode.removeChild(wave);
+                }
+            }, 600);
+        }
+        
+        function showHologram(section) {
+            // Obtener el elemento que fue clickeado
+            const clickedCard = event.currentTarget;
+            const soundType = clickedCard.getAttribute('data-sound');
+            
+            // Reproducir sonido específico
+            createSectionSound(soundType);
+            
+            // Crear efecto visual
+            createSoundWave(clickedCard);
+            
+            const data = hologramData[section];
+            if (data) {
+                document.getElementById('modalTitle').textContent = data.title;
+                document.getElementById('modalContent').innerHTML = data.content;
+                document.getElementById('hologramOverlay').style.display = 'block';
+            }
+        }
+        
+        function closeHologram(event) {
+            // Si se pasó un evento, verificar si se hizo clic en el overlay
+            if (event && event.target !== document.getElementById('hologramOverlay')) {
+                return;
+            }
+            document.getElementById('hologramOverlay').style.display = 'none';
+        }
+        
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeHologram();
+            }
+        });
+        
+        // Efectos al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Crear partículas
+            createParticles();
+            
+            // Iniciar música automáticamente
+            startAutoMusic();
+            
+            // Animación de aparición de tarjetas
+            const cards = document.querySelectorAll('.holo-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(50px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 1s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+
+</body></html>
